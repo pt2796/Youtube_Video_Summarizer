@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    .question {
+      margin-bottom: 20px;
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .question h3 {
+      margin-bottom: 10px;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .option {
+      flex: 1 1 calc(50% - 10px);
+      padding: 10px;
+      text-align: center;
+      background-color: #e9ecef;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .option:hover {
+      background-color: #d9d9d9;
+    }
+
+    .option.selected {
+      background-color: #007BFF;
+      color: white;
+      border-color: #0056b3;
+    }
+
+    .option input[type="radio"] {
+      display: none;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz</h1>
+    <form method="POST" action="/submit_quiz">
+      {% for question in questions %}
+      <div class="question">
+        <h3>{{ loop.index }}. {{ question.question }}</h3>
+        <div class="options" data-question="{{ loop.index0 }}">
+          {% for option in question.choices %}
+          <label class="option">
+            <input type="radio" name="q{{ loop.index0 }}" value="{{ option }}">
+            {{ option }}
+          </label>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="question_{{ loop.index0 }}" value="{{ question.question }}">
+        <input type="hidden" name="correct_answer_{{ loop.index0 }}" value="{{ question.correct_answer }}">
+      </div>
+      {% endfor %}
+      <input type="hidden" name="total_questions" value="{{ questions|length }}">
+      <button type="submit">Submit Quiz</button>
+    </form>
+  </div>
+
+  <script>
+    document.querySelectorAll(".options").forEach((group) => {
+      const options = group.querySelectorAll(".option");
+      options.forEach((opt) => {
+        const input = opt.querySelector("input[type='radio']");
+        opt.addEventListener("click", () => {
+          // Remove selection from others
+          options.forEach((o) => o.classList.remove("selected"));
+          // Mark current
+          opt.classList.add("selected");
+          input.checked = true;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
